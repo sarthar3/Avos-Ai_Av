@@ -1,0 +1,112 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.venv/
+venv/
+ENV/
+env/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs and databases
+*.log
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+logs/*.log
+logs/*.db
+
+# Build outputs
+*.exe
+*.dll
+*.so
+*.dylib
+*.pdb
+*.obj
+*.o
+ui/build/
+ui/dist/
+parsers/target/
+drivers/*/build/
+drivers/*/x64/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+quarantine/*
+!quarantine/.gitkeep
+
+# Models (too large for git)
+models/*.pkl
+models/*.h5
+models/*.pt
+models/*.pth
+models/*.onnx
+!models/.gitkeep
+
+# Signatures (can be large)
+signatures/*.yar
+signatures/*.db
+!signatures/README.md
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Environment
+.env
+.env.local
+*.env
+
+# Compiled
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Package files
+*.tar.gz
+*.zip
+*.7z
+
+# Made with Bob

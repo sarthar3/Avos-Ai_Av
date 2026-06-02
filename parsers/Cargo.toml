@@ -1,0 +1,17 @@
+[package]
+name = "avos-parsers"
+version = "0.1.0"
+edition = "2021"
+description = "AVOS AI — Fast PE/packet parsers exposed to Python via PyO3"
+
+[[lib]]
+name = "avos_parsers"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.21", features = ["extension-module"] }
+
+[profile.release]
+lto = true
+opt-level = 3
+strip = true

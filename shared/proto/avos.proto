@@ -1,0 +1,224 @@
+syntax = "proto3";
+
+package avos;
+
+option java_package = "com.avosai";
+
+// ─── Models ──────────────────────────────────────────────────────────────────
+
+message ThreatEventProto {
+  string event_id     = 1;
+  string event_type   = 2;
+  string threat_level = 3;   // CLEAN, LOW, MEDIUM, HIGH, CRITICAL
+  double score        = 4;
+  string source       = 5;
+  string path         = 6;
+  int32  pid          = 7;
+  string details_json = 8;   // JSON string of details dict
+  double timestamp    = 9;
+  bool   remediated   = 10;
+  string explanation  = 11;
+}
+
+message SystemStatus {
+  string version      = 1;
+  string mode         = 2;   // normal, gamer, developer
+  bool   running      = 3;
+  repeated ModuleStatusProto modules = 4;
+  int32  threats_today = 5;
+  double cpu_usage    = 6;
+  double ram_usage_mb = 7;
+}
+
+message ModuleStatusProto {
+  string name        = 1;
+  bool   enabled     = 2;
+  bool   healthy     = 3;
+  double last_event_time = 4;
+}
+
+message ModuleConfigRequest {
+  string module_name = 1;
+  bool   enabled     = 2;
+}
+
+message ModeRequest {
+  string mode = 1;
+}
+
+message GenericResponse {
+  bool   success = 1;
+  string message = 2;
+}
+
+message ThreatListRequest {
+  int32  limit  = 1;
+  int32  offset = 2;
+  string filter = 3;  // threat level filter
+}
+
+message ThreatListResponse {
+  repeated ThreatEventProto threats = 1;
+  int32 total = 2;
+}
+
+message QuarantineRequest {
+  string path = 1;
+}
+
+message ChatRequest {
+  string question         = 1;
+  string threat_event_id  = 2;  // optional context
+}
+
+message ChatResponse {
+  string answer   = 1;
+  double confidence = 2;
+}
+
+message ScanRequest {
+  string path = 1;
+}
+
+message ScanResponse {
+  bool   is_threat   = 1;
+  double score       = 2;
+  string threat_name = 3;
+  string explanation = 4;
+}
+
+message BreachAlert {
+  string email     = 1;
+  string source    = 2;
+  string date      = 3;
+  string data_types = 4;
+}
+
+message BreachListResponse {
+  repeated BreachAlert alerts = 1;
+}
+
+message BrowserLaunchRequest {
+  string url = 1;
+}
+
+message TokenizeRequest {
+  string card_number = 1;
+  string expiry      = 2;
+  string cvv         = 3;
+}
+
+message TokenizeResponse {
+  string token = 1;
+}
+
+// ─── DNS Audit ────────────────────────────────────────────────────────────────
+
+message DnsAuditRequest {
+  repeated string domains = 1;
+}
+
+message DnsAuditEntry {
+  string domain    = 1;
+  bool   secure    = 2;
+  string local_ip  = 3;
+  string secure_ip = 4;
+}
+
+message DnsAuditResponse {
+  repeated DnsAuditEntry results = 1;
+}
+
+// ─── Utilities ────────────────────────────────────────────────────────────────
+
+message UtilityRequest {
+  string path                 = 1;
+  string password             = 2;
+  bool   include_browser_cache = 3;
+}
+
+message UtilityResponse {
+  bool   success  = 1;
+  string message  = 2;
+  int32  count    = 3;
+  double size_mb  = 4;
+}
+
+// ─── Firewall ─────────────────────────────────────────────────────────────────
+
+message FirewallRule {
+  string name      = 1;
+  string direction = 2;  // IN / OUT
+  string action    = 3;  // ALLOW / BLOCK
+  string port      = 4;
+  bool   enabled   = 5;
+  string protocol  = 6;
+  string profile   = 7;
+}
+
+message FirewallRulesResponse {
+  repeated FirewallRule rules = 1;
+}
+
+// ─── EDR Events ──────────────────────────────────────────────────────────────
+
+message EDREvent {
+  string event_type   = 1;
+  int32  pid          = 2;
+  string path         = 3;
+  string details_json = 4;
+  double timestamp    = 5;
+}
+
+message EDREventsResponse {
+  repeated EDREvent events = 1;
+  int32 total = 2;
+}
+
+// ─── Services ─────────────────────────────────────────────────────────────────
+
+// Main service: UI <-> CSO
+service AvosService {
+  // Streaming threat events (UI subscribes to real-time alerts)
+  rpc StreamThreatEvents(GenericResponse) returns (stream ThreatEventProto);
+
+  // System status (dashboard)
+  rpc GetSystemStatus(GenericResponse) returns (SystemStatus);
+
+  // Module management
+  rpc SetModuleConfig(ModuleConfigRequest) returns (GenericResponse);
+  rpc SetMode(ModeRequest) returns (GenericResponse);
+
+  // Threat management
+  rpc GetThreats(ThreatListRequest) returns (ThreatListResponse);
+  rpc QuarantineFile(QuarantineRequest) returns (GenericResponse);
+
+  // On-demand scanning
+  rpc ScanFile(ScanRequest) returns (ScanResponse);
+
+  // AI chatbot (offline, DB-context-aware)
+  rpc Chat(ChatRequest) returns (ChatResponse);
+
+  // Dark web / breach alerts
+  rpc GetBreachAlerts(GenericResponse) returns (BreachListResponse);
+
+  // Payment Shield Actions
+  rpc LaunchSecureBrowser(BrowserLaunchRequest) returns (GenericResponse);
+  rpc TokenizeCardData(TokenizeRequest) returns (TokenizeResponse);
+  rpc WipeClipboard(GenericResponse) returns (GenericResponse);
+
+  // DNS Audit (real Cloudflare DoH check)
+  rpc AuditDns(DnsAuditRequest) returns (DnsAuditResponse);
+
+  // Utilities
+  rpc ScanRegistry(GenericResponse) returns (UtilityResponse);
+  rpc CleanTemp(UtilityRequest) returns (UtilityResponse);
+  rpc LockFolder(UtilityRequest) returns (GenericResponse);
+  rpc UnlockFolder(UtilityRequest) returns (GenericResponse);
+
+  // Firewall rules (real Windows Firewall via netsh)
+  rpc GetFirewallRules(GenericResponse) returns (FirewallRulesResponse);
+
+  // EDR events log
+  rpc GetEDREvents(ThreatListRequest) returns (EDREventsResponse);
+}

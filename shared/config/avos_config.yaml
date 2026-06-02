@@ -1,0 +1,72 @@
+# AVOS AI - Configuration
+# Adjust thresholds, enable/disable modules, and set file paths here
+
+system:
+  version: "1.0.0"
+  log_level: INFO
+  quarantine_path: quarantine
+  models_path: models
+
+modules:
+  signature_scan:   true
+  heuristic:        true
+  ransomware:       true
+  ids_ips:          true
+  waf:              true
+  memory_guard:     true
+  rootkit:          true
+  ai_predictor:     true
+  dark_web:         true
+  payment_shield:   true
+  usb_monitor:      true
+  autorun_guard:    true
+  sandbox:          false     # Enable manually — experimental
+  deepfake_scan:    false     # Enable manually — requires GPU recommended
+
+thresholds:
+  heuristic_alert:             60.0   # Score 0-100 above which to alert
+  ai_alert:                    70.0   # AI probability % above which to alert
+  ransomware_files_per_10s:    50     # Files/10s to trigger ransomware alert
+  ids_ddos_conn_per_sec:       100    # Connections/sec = DDoS
+  ids_brute_force_per_min:     10     # Auth failures/min = brute force
+  ids_port_scan_ports_per_5s:  20     # Unique ports/5s = port scan
+
+dark_web:
+  hibp_api_key: ""             # Set your HIBP API key here
+  poll_interval_hours: 24
+  monitored_emails: []
+
+safe_browsing:
+  api_key: ""                  # Google Safe Browsing API key (optional)
+
+modes:
+  default: normal              # normal | gamer | developer
+  gamer_mode_skip_events:
+    - file_write
+    - file_create
+  developer_mode_verbose: true
+
+database:
+  path: logs/avos.db
+  vault_path: logs/avos_vault.db
+
+ipc:
+  pipe_name: "\\\\.\\\\.\\\\pipe\\\\AvosCSO"
+  payment_pipe: "\\\\.\\\\.\\\\pipe\\\\AvosPaymentAlert"
+  grpc_port: 50051
+
+performance:
+  max_concurrent_scans: 4
+  scan_worker_threads: 2
+  idle_cpu_target_pct: 1.0
+  max_ram_mb: 50
+
+autorun_guard:
+  check_interval_seconds: 10
+  whitelist:
+    - "Windows Defender"
+    - "SecurityHealth"
+
+usb_monitor:
+  poll_interval_seconds: 3
+  auto_scan_on_insert: true

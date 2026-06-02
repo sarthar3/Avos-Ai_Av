@@ -1,0 +1,50 @@
+# AVOS AI - Python Dependencies
+# Install with: pip install -r requirements.txt
+
+# ── Core & Async ──────────────────────────────────────────────
+asyncio-mqtt==0.16.2
+aiofiles==23.2.1
+
+# ── IPC & gRPC ───────────────────────────────────────────────
+grpcio>=1.62.1
+grpcio-tools>=1.62.1
+protobuf>=5.26.1
+
+# ── Windows APIs ─────────────────────────────────────────────
+pywin32
+wmi==1.5.1
+psutil==5.9.8
+
+# ── Security, Scanning & MOD-08 Payment Shield ───────────────
+yara-python>=4.3.0
+pefile>=2023.2.7
+cryptography>=42.0.0   # Used for AES-256 local Card Tokenizer
+
+# ── AI / ML ──────────────────────────────────────────────────
+scikit-learn>=1.4.0
+numpy>=1.26.0
+torch>=2.2.0           # CPU-only for offline capability
+transformers>=4.40.0
+joblib>=1.4.0
+
+# ── NLP / Chatbot ────────────────────────────────────────────
+# transformers already listed above
+
+# ── Visualization / EDR Graph ────────────────────────────────
+networkx>=3.3
+
+# ── Database ─────────────────────────────────────────────────
+# sqlite3 is built-in.
+
+# ── Web Security ─────────────────────────────────────────────
+requests>=2.31.0
+
+# ── Config ───────────────────────────────────────────────────
+PyYAML>=6.0.0
+
+# ── File System Monitoring ───────────────────────────────────────────────────
+watchdog>=4.0.0
+
+# ── Testing ──────────────────────────────────────────────────
+pytest>=8.1.0
+pytest-asyncio>=0.23.0
